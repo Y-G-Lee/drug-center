@@ -17,6 +17,10 @@ function MedicalList() {
 
   const [finalPage, setFinalPage] = useState();
 
+  const [reqParam, setReqParam] = useState("efcyQesitm");
+
+  const [option, setOption] = useState("");
+
   useEffect(() => {
     const sendAxios = async () => {
       var url = MEDICAL_API_URL; /*URL*/
@@ -24,6 +28,7 @@ function MedicalList() {
       queryParams += `&pageNo=${page}`; /**/
       queryParams += "&numOfRows=9"; /**/
       queryParams += "&type=json";
+      queryParams += `&${reqParam}=${keyWord}`;
 
       const response = await axios.get(url + queryParams);
       console.log(response);
@@ -33,11 +38,12 @@ function MedicalList() {
       setItemArray(items);
 
       const final = response.data.body.totalCount;
-      setFinalPage(final)
+      const totalPage = Math.ceil(final / 9);
+      setFinalPage(totalPage)
 
       const newPageNumArray = [];
       const start = Math.floor((page - 1) / 10) * 10 + 1;
-      const end = Math.floor(start + 9, final);
+      const end = Math.min(start + 9, totalPage);
 
       for(let i = start; i <= end; i++) {
         newPageNumArray.push(i);
@@ -45,10 +51,11 @@ function MedicalList() {
       setNumArray(newPageNumArray);
     };
     sendAxios();
-  }, [page]);
+  }, [page,option]);
 
   const searchBtnClick = () => {
-    
+    setOption({});
+    setPage(1);
   };
 
   const firstPage = () => {
@@ -77,11 +84,11 @@ function MedicalList() {
         <span className="text-2xl font-bold"> 의약품 목록 </span>
         <span className="text-gray-400 text-sm mt-3"> 궁금하신 의약품을 검색해보세요 </span>
         <div className="mt-2">
-            <select className="border-3 border-blue-400 p-1 mr-0.5">
-          <option value=""> 선택하세요 </option>
-          <option value="itemName"> 약품명 </option>
-          <option value="entpName"> 회사명 </option>
-        </select>
+            <select value={reqParam} onChange={(e) => setReqParam(e.target.value)} className="border-3 border-blue-400 p-1 mr-0.5 outline-none">
+              <option value="efcyQesitm"> 선택하세요 </option>
+              <option value="itemName"> 약품명 </option>
+              <option value="entpName"> 회사명 </option>
+            </select>
           <input value={keyWord} onChange={(e) => setKeyWord(e.target.value)} type="text" className="border-3 border-blue-400 w-160 h-9 outline-none" />
           <button
             className="bg-blue-400 w-30 h-9 px-2 py-1 text-white"
