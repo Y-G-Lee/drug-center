@@ -43,7 +43,7 @@ function MedicalPharmacy() {
         location: new kakao.maps.LatLng(lat, lon),
         radius: 1000,
       };
-      ps.keywordSearch("내 주변 약국", (data, status) => {
+      ps.keywordSearch("약국", (data, status) => {
         if (status === kakao.maps.services.Status.OK) {
           var bounds = new kakao.maps.LatLngBounds();
 
